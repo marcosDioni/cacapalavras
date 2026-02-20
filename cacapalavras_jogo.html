@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Caça-Palavras - Jogo</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+}
+
+table {
+    margin: 20px auto;
+    border-collapse: collapse;
+}
+
+td {
+    width: 40px;
+    height: 40px;
+    border: 1px solid #333;
+    font-size: 20px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.selected {
+    background-color: yellow;
+}
+
+.found {
+    background-color: lightgreen;
+}
+
+#status {
+    margin-top: 10px;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🎮 CAÇA-PALAVRAS – INTERNET E REDES</h2>
+
+<p>Arraste o mouse para selecionar as palavras:</p>
+<p><b>INTERNET, REDE, URL, BUSCA, LINK, SITE</b></p>
+
+<table id="grid"></table>
+
+<p id="status"></p>
+
+<script>
+const gridData = [
+['I','N','T','E','R','N','E','T','R','E','D','E'],
+['U','R','L','B','U','S','C','A','N','A','V','E'],
+['G','A','D','O','L','I','N','K','S','I','T','E'],
+['X','P','Q','L','Z','M','A','R','T','Y','U','I'],
+['O','K','L','P','R','E','D','E','B','N','M','Q'],
+['Z','X','C','V','B','N','M','A','S','D','F','G']
+];
+
+const words = ["INTERNET","REDE","URL","BUSCA","LINK","SITE"];
+let foundWords = [];
+
+const grid = document.getElementById("grid");
+const status = document.getElementById("status");
+
+let isMouseDown = false;
+let selectedCells = [];
+
+function createGrid() {
+    gridData.forEach(row => {
+        let tr = document.createElement("tr");
+
+        row.forEach(letter => {
+            let td = document.createElement("td");
+            td.textContent = letter;
+
+            td.addEventListener("mousedown", () => {
+                isMouseDown = true;
+                clearSelection();
+                selectCell(td);
+            });
+
+            td.addEventListener("mouseover", () => {
+                if (isMouseDown) selectCell(td);
+            });
+
+            td.addEventListener("mouseup", () => {
+                isMouseDown = false;
+                checkWord();
+            });
+
+            tr.appendChild(td);
+        });
+
+        grid.appendChild(tr);
+    });
+
+    document.body.addEventListener("mouseup", () => {
+        isMouseDown = false;
+    });
+}
+
+function selectCell(td) {
+    if (!td.classList.contains("selected") && !td.classList.contains("found")) {
+        td.classList.add("selected");
+        selectedCells.push(td);
+    }
+}
+
+function checkWord() {
+    let word = selectedCells.map(c => c.textContent).join("");
+
+    if (words.includes(word) && !foundWords.includes(word)) {
+        selectedCells.forEach(c => {
+            c.classList.remove("selected");
+            c.classList.add("found");
+        });
+
+        foundWords.push(word);
+        status.textContent = "✔ Encontrou: " + word;
+
+        if (foundWords.length === words.length) {
+            status.textContent = "🎉 Parabéns! Você encontrou todas as palavras!";
+        }
+
+    } else {
+        clearSelection();
+    }
+}
+
+function clearSelection() {
+    selectedCells.forEach(c => c.classList.remove("selected"));
+    selectedCells = [];
+}
+
+createGrid();
+</script>
+
+</body>
+</html>
